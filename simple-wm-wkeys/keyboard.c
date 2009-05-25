@@ -29,7 +29,6 @@ Bool handle_keyevent(XKeyEvent *event)
 			case ACTIONKEY_LAUNCHER:
 				exec_launcher();
 				break;				
-			//case XK_Escape: // XX TODO: figure out how to prevent exit on Escape?
 		}
 	}
 	
