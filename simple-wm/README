@@ -1,0 +1,4 @@
+The simplest possible Window Manger.
+This allows client windows to be placed and sized using their owwn preferences and also outlines the active window in white.
+
+NOTE: It should be started from an xterm window as a background process, when no other window manager is running.
