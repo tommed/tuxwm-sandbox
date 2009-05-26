@@ -51,16 +51,14 @@ void snapshot_window(Display *d, Window *win_handle)
 	}
 	
 	// extract the properties we need to take the snapshot
-	//XRenderPictFormat *format = XRenderFindVisualFormat(d, a.visual);
-	//Bool has_alpha = (format->type == PictTypeDirect && format->direct.alphaMask);
-	//int x=a.x, y=a.y;
 	int width=a.width, height=a.height;
 	printf("window attributes: width=%d, height=%d\n", width, height);
 	
 	// take the snapshot, save it to the root window!
 	XWindowAttributes root_attribs;
 	XImage *img = XGetImage(d, *win_handle, 0, 0, width, height, AllPlanes, ZPixmap);
-	Window root = RootWindow(d,0);
+	int screen = DefaultScreen(d);
+	Window root = RootWindow(d,screen);
 	XGetWindowAttributes(d, root, &root_attribs);
 	GC gc = XCreateGC(d, root, 0, NULL);
 	XSetForeground(d, gc, WhitePixel(d,0)); // make sure the fg color is white
@@ -68,6 +66,5 @@ void snapshot_window(Display *d, Window *win_handle)
 	XPutImage(d, root, gc, img, 0, 0, 400, 400, width, height); // draw snapshot to root window at an offset
 	XDestroyImage(img);
 	
-	//XFreePixmap(d, pixmap);
 	printf("snapshot taken\n");
 }
