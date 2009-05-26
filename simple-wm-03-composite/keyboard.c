@@ -33,7 +33,6 @@ Bool handle_keyevent(XKeyEvent *event, Window *active_window)
 			case ACTIONKEY_SNAPSHOT:
 				snapshot_window(event->display, active_window);
 				break;
-			//case XK_Escape: // XX TODO: figure out how to prevent exit on Escape?
 		}
 	}
 	
