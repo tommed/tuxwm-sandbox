@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/extensions/Xrender.h>
-#include <X11/xpm.h>
+#include <X11/Xatom.h>
 #include "composite.h"
 
 static Bool has_composite_extension;
@@ -9,7 +9,7 @@ static Bool has_composite_extension;
 //
 // Check composition
 //
-Bool init_composite_extension(Display *d, Window *root, int screen)
+Bool init_composite_extension(Display *d, Window root, int screen)
 {
 	has_composite_extension = False;
 	int event_base, error_base;
@@ -19,7 +19,7 @@ Bool init_composite_extension(Display *d, Window *root, int screen)
 		has_composite_extension = (major >= 0 || minor > 2);
 		// begin off-screen composition
 		if (has_composite_extension) {
-			XCompositeRedirectSubwindows(d, *root, CompositeRedirectAutomatic);
+			XCompositeRedirectSubwindows(d, root, CompositeRedirectAutomatic);
 		}
 	}
 	return has_composite_extension;
@@ -28,14 +28,9 @@ Bool init_composite_extension(Display *d, Window *root, int screen)
 //
 // Take a snapshot of the given window
 //
-void snapshot_window(Display *d, Window *win_handle)
+void snapshot_window(Display *d, Window win_handle)
 {
 	printf("attempting to snapshot active window\n");
-	
-	if (win_handle == NULL) {
-		fprintf(stderr, "Cannot snapshot window as window is NULL\n");
-		return;
-	}
 	
 	// can only happen if composite is initialized and configured
 	if (!has_composite_extension) {
@@ -45,7 +40,7 @@ void snapshot_window(Display *d, Window *win_handle)
 		
 	// grab some properties from the Window
 	XWindowAttributes a;
-	if (!XGetWindowAttributes(d, *win_handle, &a)) {
+	if (!XGetWindowAttributes(d, win_handle, &a)) {
 		fprintf(stderr, "Cannot snapshot window; unable to retrieve window attributes\n");
 		return;
 	}
@@ -56,7 +51,7 @@ void snapshot_window(Display *d, Window *win_handle)
 	
 	// take the snapshot, save it to the root window!
 	XWindowAttributes root_attribs;
-	XImage *img = XGetImage(d, *win_handle, 0, 0, width, height, AllPlanes, ZPixmap);
+	XImage *img = XGetImage(d, win_handle, 0, 0, width, height, AllPlanes, ZPixmap);
 	int screen = DefaultScreen(d);
 	Window root = RootWindow(d,screen);
 	XGetWindowAttributes(d, root, &root_attribs);
@@ -67,4 +62,15 @@ void snapshot_window(Display *d, Window *win_handle)
 	XDestroyImage(img);
 	
 	printf("snapshot taken\n");
+}
+
+//
+// Set opacity for window
+//
+void set_opacity(Display *d, Window win, double opacity)
+{
+	int o = opacity * 0xffffffff; // convert from 0-1 to opacity 
+	Atom atom_opacity = XInternAtom(d, "_NET_WM_WINDOW_OPACITY", False);
+	XChangeProperty(d, win, atom_opacity, XA_CARDINAL, 32, PropModeReplace, (unsigned char *)&o, 1L);
+  XSync(d, False);
 }

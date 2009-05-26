@@ -4,8 +4,8 @@
 #ifndef COMPOSITE_H
 #define COMPOSITE_H
 
-Bool init_composite_extension(Display *d, Window *win, int screen);
-void snapshot_window(Display *d, Window *win);
-void set_opacity(Display *d, Window *win, double opacity);
+Bool init_composite_extension(Display *d, Window win, int screen);
+void snapshot_window(Display *d, Window win);
+void set_opacity(Display *d, Window win, double opacity);
 
 #endif

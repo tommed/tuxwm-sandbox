@@ -7,6 +7,6 @@
 enum { A_Quit, A_Launcher, A_Last };
 typedef int ActionKey;
 
-Bool handle_keyevent(XKeyEvent *event, Window *active_window); // returns `should quit app?`
+Bool handle_keyevent(XKeyEvent *event, Window active_window); // returns `should quit app?`
 
 #endif

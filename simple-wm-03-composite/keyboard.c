@@ -10,7 +10,7 @@ void exec_launcher();
 //
 // Handle a keypress on any window (inc. Root window)
 //
-Bool handle_keyevent(XKeyEvent *event, Window *active_window)
+Bool handle_keyevent(XKeyEvent *event, Window active_window)
 {
 	Bool should_quit = False;
 	XComposeStatus status;

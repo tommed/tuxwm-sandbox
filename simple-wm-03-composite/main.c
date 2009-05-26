@@ -33,7 +33,7 @@ int main()
 	Window root = DefaultRootWindow(d);
 	
 	printf("check that composite is configured\n");
-	init_composite_extension(d, &root, screen); // composite.h
+	init_composite_extension(d, root, screen); // composite.h
 	
 	// tell root window you'll be capturing it's events
 	XSetWindowAttributes a;
@@ -53,7 +53,6 @@ int main()
 		if (e.type == CreateNotify) {
 			printf("Event: create\n");
 			XSelectInput(e.xcreatewindow.display, e.xcreatewindow.window, a.event_mask);
-			XSetWindowBorderWidth(e.xcreatewindow.display, e.xcreatewindow.window, 1); // always set border to 1px
 		}
 		
 		else if (e.type == ConfigureNotify) {
@@ -63,20 +62,17 @@ int main()
 		else if (e.type == EnterNotify) {
 			printf("EVENT: focus-in\n");
 			focused_win = e.xcrossing.window;
-			a.border_pixel = WhitePixel(e.xcrossing.display, screen);
-			XChangeWindowAttributes(e.xcrossing.display, focused_win, CWBorderPixel, &a);
-			snapshot_window(e.xcrossing.display, &e.xcrossing.window);
+			set_opacity(e.xcrossing.display, e.xcrossing.window, 1.0);
 		}
 		
 		else if (e.type == LeaveNotify) {
 			printf("EVENT: focus-out\n");
-			a.border_pixel = BlackPixel(e.xcrossing.display, screen);
-			XChangeWindowAttributes(e.xcrossing.display, e.xcrossing.window, CWBorderPixel, &a);
+			set_opacity(e.xcrossing.display, e.xcrossing.window, 0.3); // make window dim if not focused
 		}
 		
 		else if (e.type == KeyRelease) {
 			printf("EVENT: key-release[%d]\n", e.xkey.keycode);
-			app_is_done = handle_keyevent(&e.xkey, &focused_win);
+			app_is_done = handle_keyevent(&e.xkey, focused_win);
 		}
 	}
 	
